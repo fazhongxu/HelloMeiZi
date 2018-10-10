@@ -1,6 +1,8 @@
 package com.xxl.hellomeizi.adapter;
 
+import android.content.Intent;
 import android.support.annotation.Nullable;
+import android.view.View;
 import android.widget.ImageView;
 
 import com.bumptech.glide.Glide;
@@ -9,6 +11,7 @@ import com.bumptech.glide.load.model.LazyHeaders;
 import com.chad.library.adapter.base.BaseQuickAdapter;
 import com.chad.library.adapter.base.BaseViewHolder;
 import com.xxl.hellomeizi.R;
+import com.xxl.hellomeizi.ui.MeiziDetailActivity;
 import com.xxl.netcore.bean.PageBean;
 
 import java.util.List;
@@ -48,12 +51,21 @@ public class MeiZiAdapter extends BaseQuickAdapter<PageBean.PageModel,BaseViewHo
                 .addHeader("Proxy-Connection", "keep-alive")
                 .addHeader("Referer", "http://m.mzitu.com/");
 
-        GlideUrl glideUrl = new GlideUrl(url, builder.build());
+        final GlideUrl glideUrl = new GlideUrl(url, builder.build());
 
         Glide.with(mContext)
                 .load(glideUrl)
                 .into(avatarIv);
         helper.setText(R.id.ui_meizi_des,item.getTitle());
+
+        avatarIv.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                Intent intent = new Intent(mContext,MeiziDetailActivity.class);
+                intent.putExtra("url",glideUrl.toStringUrl());
+                mContext.startActivity(intent);
+            }
+        });
     }
 
     public void setNextUrl(String nextUrl) {

@@ -20,40 +20,40 @@ class MainActivity : AppCompatActivity() {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_main)
         val httpClient = HttpClient()
-        httpClient.get(HOST_MOBILE_URL,object : Callback{
-            override fun onFailure(e: IOException?) {
-            }
-            override fun onResponse(response: String?) {
 
-               runOnUiThread { kotlin.run {
-                   val values = JsoupFactory.parseHtml(MenuSoup::class.java, response)
-                   Log.e("aaa",""+values.size)
+            httpClient.get(HOST_MOBILE_URL, object : Callback {
+                override fun onFailure(e: IOException?) {
+                    //Log.e("aaa",e?.message)
+                }
 
-                   if (values != null) {
-                       var localMenu : ArrayList<String> ?= ArrayList()
-                       var fragments : ArrayList<Fragment> ?= ArrayList()
-                       val menus = values.get(MenuSoup::class.java.simpleName)
-                       if (menus != null) {
-                           val list = menus as List<MenuBean>
-                           for (menuBean in list) {
-                               localMenu?.add(menuBean.title)
-                               val meiZiFragment = MeiZiFragment.newInstance(menuBean.title,menuBean.url)  // 创建fragment
-                               fragments?.add(meiZiFragment)
-                           }
-                           val meiZiPagerAdapter = MeiZiPagerAdapter(supportFragmentManager,fragments,localMenu)
-                           activity_main_vp.adapter = meiZiPagerAdapter
-                           activity_main_tl.setupWithViewPager(activity_main_vp)
-                       }
-                   }
-               } }
-            }
-        })
+                override fun onResponse(response: String?) {
 
+                    runOnUiThread {
+                        kotlin.run {
+                            val values = JsoupFactory.parseHtml(MenuSoup::class.java, response)
+                            //Log.e("aaa", "" + values.size)
+
+                            if (values != null) {
+                                var localMenu: ArrayList<String>? = ArrayList()
+                                var fragments: ArrayList<Fragment>? = ArrayList()
+                                val menus = values.get(MenuSoup::class.java.simpleName)
+                                if (menus != null) {
+                                    val list = menus as List<MenuBean>
+                                    for (menuBean in list) {
+                                        localMenu?.add(menuBean.title)
+                                        val meiZiFragment = MeiZiFragment.newInstance(menuBean.title, menuBean.url)  // 创建fragment
+                                        fragments?.add(meiZiFragment)
+                                    }
+                                    var meiZiPagerAdapter = MeiZiPagerAdapter(supportFragmentManager, fragments, localMenu)
+                                    activity_main_vp.adapter = meiZiPagerAdapter
+                                    activity_main_tl.setupWithViewPager(activity_main_vp)
+                                }
+                            }
+                        }
+                    }
+                }
+            })
 
     }
-
-
-
-
 
 }

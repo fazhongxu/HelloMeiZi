@@ -1,5 +1,7 @@
 package com.xxl.netcore.jsoup;
 
+import android.text.TextUtils;
+
 import com.xxl.netcore.bean.MenuBean;
 
 import org.jsoup.nodes.Document;
@@ -7,6 +9,7 @@ import org.jsoup.nodes.Element;
 import org.jsoup.select.Elements;
 
 import java.util.ArrayList;
+import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
 
@@ -38,7 +41,19 @@ public class MenuSoup extends BaseSoup {
         // 移除 每日更新 美女专题
         menuBeans.remove(menuBeans.size() -1);
         menuBeans.remove(menuBeans.size() -1);
+        MenuBean temp = null;
 
+        Iterator<MenuBean> iterator = menuBeans.iterator();
+        while (iterator.hasNext()) {
+            MenuBean next = iterator.next();
+            if (next.getTitle().contains("自拍")) {
+                temp = next;
+                iterator.remove();
+            }
+        }
+        if (temp != null) {
+            menuBeans.add(0,temp);
+        }
         values.put(KEY,menuBeans);
     }
 }

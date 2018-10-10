@@ -1,5 +1,7 @@
 package com.xxl.netcore.bean;
 
+import java.util.List;
+
 /**
  * Created by xxl on 2018/10/9.
  *
@@ -7,27 +9,53 @@ package com.xxl.netcore.bean;
  */
 
 public class PageBean {
-    private String title;
-    private String imgUrl;
+    private String nextPageUrl;
 
-    public PageBean(String title,String imgUrl) {
-        this.title = title;
-        this.imgUrl = imgUrl;
+    private List<PageModel> modelList;
+    public PageBean(){
+
     }
 
-    public String getTitle() {
-        return title;
+    public List<PageModel> getModelList() {
+        return modelList;
     }
 
-    public void setTitle(String title) {
-        this.title = title;
+    public void setModelList(List<PageModel> modelList) {
+        this.modelList = modelList;
     }
 
-    public String getImgUrl() {
-        return imgUrl;
+
+
+    public String getNextPageUrl() {
+        return nextPageUrl;
+    }
+    public void setNextPageUrl(String nextPageUrl) {
+        this.nextPageUrl = nextPageUrl;
     }
 
-    public void setImgUrl(String imgUrl) {
-        this.imgUrl = imgUrl;
+    public static class PageModel {
+        private String title;
+        private String imgUrl;
+
+        public PageModel(String title,String imgUrl) {
+            this.title = title;
+            this.imgUrl = imgUrl;
+        }
+
+        public String getTitle() {
+            return title;
+        }
+
+        public void setTitle(String title) {
+            this.title = title;
+        }
+
+        public String getImgUrl() {
+            return imgUrl;
+        }
+
+        public void setImgUrl(String imgUrl) {
+            this.imgUrl = imgUrl;
+        }
     }
 }

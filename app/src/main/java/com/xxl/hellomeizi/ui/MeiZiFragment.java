@@ -6,11 +6,14 @@ import android.support.annotation.Nullable;
 import android.support.v4.app.Fragment;
 import android.support.v7.widget.RecyclerView;
 import android.support.v7.widget.StaggeredGridLayoutManager;
+import android.text.TextUtils;
+import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.TextView;
 
+import com.chad.library.adapter.base.BaseQuickAdapter;
 import com.xxl.hellomeizi.R;
 import com.xxl.hellomeizi.adapter.MeiZiAdapter;
 import com.xxl.netcore.bean.PageBean;
@@ -29,12 +32,13 @@ import java.util.Map;
  * Description :
  */
 
-public class MeiZiFragment extends Fragment {
+public class MeiZiFragment extends Fragment implements BaseQuickAdapter.RequestLoadMoreListener {
     private static final String TITLE = "title";
     private static final String URL = "url";
 
     private String mTitle;
     private String mUrl;
+    private MeiZiAdapter mMeiZiAdapter;
 
     public static MeiZiFragment newInstance(String title, String url) {
         MeiZiFragment meiZiFragment = new MeiZiFragment();
@@ -53,15 +57,10 @@ public class MeiZiFragment extends Fragment {
         mUrl = arguments.getString(URL);
     }
 
-    @Nullable
     @Override
-    public View onCreateView(@NonNull LayoutInflater inflater, @Nullable ViewGroup container, @Nullable Bundle savedInstanceState) {
-        View view = LayoutInflater.from(getContext()).inflate(R.layout.fragment_meizi, null);
+    public void onViewCreated(@NonNull View view, @Nullable Bundle savedInstanceState) {
         TextView tv = view.findViewById(R.id.fragment_meizi_tv);
         final RecyclerView rv = view.findViewById(R.id.fragment_meizi_rv);
-//        StaggeredGridLayoutManager staggeredGridLayoutManager = new StaggeredGridLayoutManager(2, StaggeredGridLayoutManager.VERTICAL);
-        //manager.setAutoMeasureEnabled(true);
-//        rv.setLayoutManager(staggeredGridLayoutManager);
         tv.setText(mTitle);
         HttpClient httpClient = new HttpClient();
         httpClient.get(mUrl, new Callback() {
@@ -74,20 +73,62 @@ public class MeiZiFragment extends Fragment {
             public void onResponse(String response) throws IOException {
 
                 Map<String, Object> values = JsoupFactory.parseHtml(PageSoup.class, response);
-                final List<PageBean> pageBeans = (List<PageBean>) values.get(PageSoup.class.getSimpleName());
-                if (pageBeans != null && pageBeans.size() > 0) {
+                if (values == null) return;
+                final PageBean pageBean = (PageBean) values.get(PageSoup.class.getSimpleName());
+                if (pageBean != null && pageBean.getModelList() != null && pageBean.getModelList().size() >0) {
                     getActivity().runOnUiThread(new Runnable() {
                         @Override
                         public void run() {
-                            MeiZiAdapter meiZiAdapter = new MeiZiAdapter(pageBeans);
-                            rv.setAdapter(meiZiAdapter);
+                            List<PageBean.PageModel> modelList = pageBean.getModelList();
+                            mMeiZiAdapter = new MeiZiAdapter(modelList,pageBean.getNextPageUrl());
+                            mMeiZiAdapter.setOnLoadMoreListener(MeiZiFragment.this,rv);
+                            rv.setAdapter(mMeiZiAdapter);
                         }
                     });
 
                 }
             }
         });
-        return view;
     }
 
+    @Nullable
+    @Override
+    public View onCreateView(@NonNull LayoutInflater inflater, @Nullable ViewGroup container, @Nullable Bundle savedInstanceState) {
+        return LayoutInflater.from(getContext()).inflate(R.layout.fragment_meizi, null);
+    }
+
+    @Override
+    public void onLoadMoreRequested() {
+        HttpClient httpClient = new HttpClient();
+        String nextUrl = mMeiZiAdapter.getNextUrl();
+        if (TextUtils.isEmpty(nextUrl)) {
+            mMeiZiAdapter.loadMoreEnd();
+            mMeiZiAdapter.notifyDataSetChanged();
+            return;
+        }
+        httpClient.get(nextUrl, new Callback() {
+            @Override
+            public void onFailure(IOException e) {
+
+            }
+
+            @Override
+            public void onResponse(String response) throws IOException {
+
+                Map<String, Object> values = JsoupFactory.parseHtml(PageSoup.class, response);
+                final PageBean pageBean = (PageBean) values.get(PageSoup.class.getSimpleName());
+                if (pageBean != null && pageBean.getModelList() != null && pageBean.getModelList().size() >0) {
+                    getActivity().runOnUiThread(new Runnable() {
+                        @Override
+                        public void run() {
+                            mMeiZiAdapter.setNextUrl(pageBean.getNextPageUrl());
+                            mMeiZiAdapter.addData(pageBean.getModelList());
+                            mMeiZiAdapter.loadMoreComplete();
+                        }
+                    });
+
+                }
+            }
+        });
+    }
 }

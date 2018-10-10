@@ -16,6 +16,7 @@ import java.io.IOException
 
 class MainActivity : AppCompatActivity() {
     val HOST_MOBILE_URL : String = "http://m.mzitu.com" //http://www.mzitu.com
+
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_main)
@@ -43,6 +44,7 @@ class MainActivity : AppCompatActivity() {
                                         localMenu?.add(menuBean.title)
                                         val meiZiFragment = MeiZiFragment.newInstance(menuBean.title, menuBean.url)  // 创建fragment
                                         fragments?.add(meiZiFragment)
+                                        //fragments?.removeAt(fragments?.size-1)
                                     }
                                     var meiZiPagerAdapter = MeiZiPagerAdapter(supportFragmentManager, fragments, localMenu)
                                     activity_main_vp.adapter = meiZiPagerAdapter

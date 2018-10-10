@@ -1,5 +1,7 @@
 package com.xxl.netcore.jsoup;
 
+import android.util.Log;
+
 import com.xxl.netcore.bean.PageBean;
 
 import org.jsoup.nodes.Document;
@@ -29,20 +31,32 @@ public class PageSoup extends MenuSoup {
 
         Element content = body.getElementById("content");
         Elements figures = content.getElementsByTag("figure");
-        List<PageBean> pageBeans = new ArrayList<>();
+        List<PageBean.PageModel> pageBeans = new ArrayList<>();
+        PageBean pageBean = new PageBean();
         if (figures != null && figures.size() > 0) {
             for (Element figure : figures) {
-
                 Elements a = figure.getElementsByTag("a");
                 String title = a.attr("title");
-                //String imgUrl = a.attr("data-original");
                 List<Node> nodes = figure.childNodes();
                 Node item = nodes.get(1);
                 String imgUrl = item.childNode(0).attr("data-original");
-                PageBean pageBean = new PageBean(title, imgUrl);
-                pageBeans.add(pageBean);
+                PageBean.PageModel pageModel = new PageBean.PageModel(title, imgUrl);
+                pageBeans.add(pageModel);
             }
-            values.put(KEY,pageBeans);
+
+            Element pagebtn = content.getElementById("pagebtn");
+            if (pagebtn != null) {
+                Elements elements = pagebtn.getElementsByTag("a");
+                for (Element element : elements) {
+                    String text = element.text();
+                    if (text.contains("下一页")) {
+                        String nextUrl = element.attr("href");
+                        pageBean.setNextPageUrl(nextUrl);
+                    }
+                }
+            }
+            pageBean.setModelList(pageBeans);
+            values.put(KEY,pageBean);
             return;
         }
 
@@ -53,26 +67,24 @@ public class PageSoup extends MenuSoup {
                 Element element = localChild.getElementsByTag("img").get(0);
                 String url = element.attr("src");
                 String des = element.attr("alt");
-                PageBean pageBean = new PageBean(des, url);
-                pageBeans.add(pageBean);
-                //PageModel.ItemModel model = new PageModel.ItemModel(url.substring(url.lastIndexOf("/") + 1), des, url);
-                //value.add(model);
+                PageBean.PageModel pageModel = new PageBean.PageModel(des, url);
+                pageBeans.add(pageModel);
             }
+            pageBean.setModelList(pageBeans);
 
-            /*Elements childs = content.getElementsByClass("prev-next");
+            Elements childs = content.getElementsByClass("prev-next");
             if (childs != null && childs.size() > 0) {
                 childs = childs.get(0).getElementsByTag("a");
                 for (int i = 0; i < childs.size(); i++) {
                     Element ele = childs.get(i);
                     if (ele.text().contains("下一页")) {
                         String nextUrl = ele.attr("href");
-                        pageModel.setNextPage(nextUrl);
+                        pageBean.setNextPageUrl(nextUrl);
                         break;
                     }
                 }
-            }*/
-            //values.put(getClass().getSimpleName(), pageModel);
-            values.put(KEY, pageBeans);
+            }
+            values.put(KEY, pageBean);
         }
     }
 }

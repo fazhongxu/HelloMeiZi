@@ -19,15 +19,18 @@ import java.util.List;
  * Description :
  */
 
-public class MeiZiAdapter extends BaseQuickAdapter<PageBean,BaseViewHolder> {
-    public MeiZiAdapter( @Nullable List<PageBean> data) {
+public class MeiZiAdapter extends BaseQuickAdapter<PageBean.PageModel,BaseViewHolder> {
+    private String nextUrl;
+    public MeiZiAdapter( @Nullable List<PageBean.PageModel> data,String nextUrl) {
         super(R.layout.ui_meizi_layout,data);
+        this.nextUrl = nextUrl;
     }
 
+
     @Override
-    protected void convert(BaseViewHolder helper, PageBean item) {
+    protected void convert(BaseViewHolder helper, PageBean.PageModel item) {
         ImageView avatarIv = helper.getView(R.id.ui_meizi_avatar_iv);
-       String url = item.getImgUrl();
+        String url = item.getImgUrl();
 
         String host = "";
         if (url.startsWith("https://")) {
@@ -51,6 +54,13 @@ public class MeiZiAdapter extends BaseQuickAdapter<PageBean,BaseViewHolder> {
                 .load(glideUrl)
                 .into(avatarIv);
         helper.setText(R.id.ui_meizi_des,item.getTitle());
+    }
 
+    public void setNextUrl(String nextUrl) {
+        this.nextUrl = nextUrl;
+    }
+
+    public String getNextUrl() {
+        return nextUrl;
     }
 }

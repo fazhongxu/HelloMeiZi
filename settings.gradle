@@ -1,1 +1,1 @@
-include ':app', ':netcore'
+include ':app', ':netcore', ':baselib'

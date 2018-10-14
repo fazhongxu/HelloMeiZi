@@ -4,6 +4,7 @@ import android.os.Bundle
 import android.support.v4.app.Fragment
 import android.support.v7.app.AppCompatActivity
 import android.util.Log
+import com.alibaba.android.arouter.facade.annotation.Route
 import com.xxl.hellomeizi.R
 import com.xxl.hellomeizi.adapter.MeiZiPagerAdapter
 import com.xxl.netcore.bean.MenuBean
@@ -14,6 +15,7 @@ import com.xxl.netcore.net.HttpClient
 import kotlinx.android.synthetic.main.activity_main.*
 import java.io.IOException
 
+@Route(path = "/test/MainActivity")
 class MainActivity : AppCompatActivity() {
     val HOST_MOBILE_URL : String = "http://m.mzitu.com" //http://www.mzitu.com
 

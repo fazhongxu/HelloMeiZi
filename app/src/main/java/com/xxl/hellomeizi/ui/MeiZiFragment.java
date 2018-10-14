@@ -13,6 +13,7 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.widget.TextView;
 
+import com.alibaba.android.arouter.facade.annotation.Route;
 import com.chad.library.adapter.base.BaseQuickAdapter;
 import com.xxl.hellomeizi.R;
 import com.xxl.hellomeizi.adapter.MeiZiAdapter;
@@ -31,7 +32,6 @@ import java.util.Map;
  *
  * Description :
  */
-
 public class MeiZiFragment extends Fragment implements BaseQuickAdapter.RequestLoadMoreListener {
     private static final String TITLE = "title";
     private static final String URL = "url";
